@@ -1,26 +1,48 @@
 # CLassAttributeModelGenerator
 
-Given a [YAML](https://yaml.org) file; create a hierarchical object model.
+Given a [YAML](https://yaml.org) file or a [JSON](https://www.json.org) structure create a hierarchical object model.
 
 Some would say this is just a dict-wrapper.
 
-### Example
-
-```yaml
-    obj:
-      attr1:
-        - item1
-        - item2
-        - item3
-      attr2:
-        sub_attr_a: '42'
-        sub_attr_b: 'foo'
-```
-
-Will result in the following structure:
+### Example 1
 
 ```python3
-    <(obj=<obj(attr1=['item1', 'item2', 'item3'], attr2=<attr2(sub_attr_a=42, sub_attr_b=foo)>)>)>
+
+    >>> a = '''obj:
+    ...   obj_list:
+    ...     - 1
+    ...     - 2
+    ...     - dog
+    ...   obj_dict:
+    ...     key_foo: bar
+    ...     key_spam: eggs
+    ... '''
+    >>> b = clamg.loads(a)
+    >>> b.obj
+    <obj(obj_list=[1, 2, 'dog'], obj_dict=<obj_dict(key_foo=bar, key_spam=eggs)>)>
+
 ```
 
-It has occasionally proven useful when interacting with REST APIs.
+### Example 2
+
+```python3
+
+    >>> j = '''{
+    ...     "obj": {
+    ...         "obj_list": [
+    ...             1, 2, "dog"
+    ...         ],
+    ...         "obj_dict": {
+    ...             "key_foo":"bar",
+    ...             "key_spam":"eggs"
+    ...         }
+    ...     }
+    ... }'''
+    >>> jl = json.loads(j)
+    >>> h = clamg.unpack(jl)
+    >>> h
+    <(obj=<obj(obj_list=[1, 2, 'dog'], obj_dict=<obj_dict(key_foo=bar, key_spam=eggs)>)>)>
+
+```
+
+It has occasionally proven useful when working with deeply nested structures.
