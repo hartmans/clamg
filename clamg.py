@@ -1,6 +1,8 @@
 from yaml import Loader
 from os.path import abspath
 
+__version__ = 0.2
+
 class Base:
     def __init__(self, *args, **kwargs):
         for a in args:  
@@ -13,6 +15,10 @@ class Base:
     def __repr__(self):
         items = [f'{k}={v}' for k, v in self.__dict__.items()]
         return f"<{self.__class__.__name__}({', '.join(items)})>"
+
+def loads(s):
+    data = Loader(s).get_data()
+    return unpack(data)
 
 def load(n):
     with open(n, 'r') as f:
@@ -28,7 +34,7 @@ def unpack(i, c=0, rk=''):
                 attrs.update({k:unpack(v, c, k)})
             elif type(v) is list:
                 attrs.update({k:unpack(v, c, k)})
-            elif type(v) is (str or int):
+            elif (type(v) is str) or (type(v) is int):
                 attrs.update({k:v})
     elif type(i) is list:
         attrs = []
@@ -37,9 +43,9 @@ def unpack(i, c=0, rk=''):
                 attrs.append(unpack(li, c, rk))
             elif type(li) is list:
                 attrs.append(unpack(li, c, rk))
-            elif type(li) is (str or int):
+            elif (type(li) is str) or (type(li) is int):
                 attrs.append(li)
         return attrs
-    elif type(i) is (str or int):
+    elif (type(i) is str) or (type(i) is int):
         return i
     return type(rk[:-1] if rk.endswith('s') else rk, (Base,), {})(attrs)
