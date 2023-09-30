@@ -34,7 +34,7 @@ def load(n):
         data = Loader(f.read()).get_data()
     return unpack(data)
 
-def unpack(i, c=0, rk=''):
+def unpack(i, c=0, rk='clamg'):
     c += 1
     attrs = {}
     if type(i) is dict:
