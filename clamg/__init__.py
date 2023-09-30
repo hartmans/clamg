@@ -5,12 +5,21 @@ __version__ = 0.2
 
 class Base:
     def __init__(self, *args, **kwargs):
-        for a in args:  
+        for a in args:
             if type(a) is dict:
                 self.__dict__ = a
         for k, v in kwargs.items():
             if k in allkw:
                 self.__dict__.update({k:v})
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __contains__(self, key):
+        return key in self.__dict__
+
+    def __iter__(self):
+        return iter(self.__dict__)
 
     def __repr__(self):
         items = [f'{k}={v}' for k, v in self.__dict__.items()]
