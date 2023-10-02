@@ -1,7 +1,11 @@
-from yaml import Loader
-from os.path import abspath
+import json
+import io
+import os
+import yaml
 
-__version__ = 0.2
+__version__ = 0.3
+
+__all__ = []
 
 class Base:
     def __init__(self, *args, **kwargs):
@@ -25,36 +29,102 @@ class Base:
         items = [f'{k}={v}' for k, v in self.__dict__.items()]
         return f"<{self.__class__.__name__}({', '.join(items)})>"
 
-def loads(s):
-    data = Loader(s).get_data()
+
+def loads(s: str, _yaml=True, _json=False) -> Base:
+    """A string that should be decoded
+    """
+    if _yaml:
+        data = yaml.safe_load(s)
+    elif _json:
+        data = json.loads(s)
+
     return unpack(data)
 
-def load(n):
-    with open(n, 'r') as f:
-        data = Loader(f.read()).get_data()
+__all__ += ["loads"]
+
+
+def load(fp: str | os.PathLike | io.TextIOWrapper, _yaml=True, _json=False) -> Base:
+    """
+        Args:
+            fp: will be normalized to a filelike object and read from.
+        Returns:
+            clamg.Base
+    """
+    fh = None
+
+    if isinstance(fp, str):
+        fh = open(fp)
+    elif isinstance(fp, io.TextIOWrapper):
+        fh = fp
+    elif isinstance(fp, os.PathLike):
+        fh = fp.open()
+
+    if _yaml:
+        data = yaml.safe_load(fh.read())
+    elif _json:
+        data = json.loads(fh.read())
+
     return unpack(data)
 
-def unpack(i, c=0, rk='clamg'):
-    c += 1
+__all__ += ["load"]
+
+
+def unpack(i: object, rk='clamg'):
+    """Return a class-attribute model from data
+
+        Args:
+            i: A primitive type like dict, list, str ...
+
+        Returns:
+            clamg.Base
+    """
     attrs = {}
     if type(i) is dict:
         for k, v in i.items():
             if type(v) is dict:
-                attrs.update({k:unpack(v, c, k)})
-            elif type(v) is list:
-                attrs.update({k:unpack(v, c, k)})
-            elif (type(v) is str) or (type(v) is int):
+                attrs.update({k:unpack(v, k)})
+            elif (
+                (type(v) is list)
+                or (type(v) is tuple)
+                or (type(v) is set)
+            ):
+                attrs.update({k:unpack(v, k)})
+            elif (
+                (type(v) is str)
+                or (type(v) is int)
+                or (type(v) is float)
+            ):
                 attrs.update({k:v})
+            else:
+                raise ValueError(f"Unexpected type {type(v)}")
     elif type(i) is list:
         attrs = []
         for li in i:
             if type(li) is dict:
-                attrs.append(unpack(li, c, rk))
-            elif type(li) is list:
-                attrs.append(unpack(li, c, rk))
-            elif (type(li) is str) or (type(li) is int):
+                attrs.append(unpack(li, rk))
+            elif (
+                (type(li) is list)
+                or (type(li) is tuple)
+                or (type(li) is set)
+            ):
+                attrs.append(unpack(li, rk))
+            elif (
+                (type(li) is str)
+                or (type(li) is int)
+                or (type(li) is float)
+            ):
                 attrs.append(li)
+            else:
+                raise ValueError(f"Unexpected type {type(li)}")
         return attrs
-    elif (type(i) is str) or (type(i) is int):
+    elif (
+        (type(i) is str)
+        or (type(i) is int)
+        or (type(i) is float)
+    ):
         return i
+    else:
+        raise ValueError(f"Unexpected type {type(i)}")
     return type(rk[:-1] if rk.endswith('s') else rk, (Base,), {})(attrs)
+
+__all__ += ["unpack"]
