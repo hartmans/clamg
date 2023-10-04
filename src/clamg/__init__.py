@@ -92,6 +92,7 @@ def unpack(i: object, rk='clamg'):
             elif (
                 (type(v) is str)
                 or (type(v) is int)
+                or (type(v) is bool)
                 or (type(v) is float)
             ):
                 attrs.update({k:v})
@@ -111,6 +112,7 @@ def unpack(i: object, rk='clamg'):
             elif (
                 (type(li) is str)
                 or (type(li) is int)
+                or (type(li) is bool)
                 or (type(li) is float)
             ):
                 attrs.append(li)
@@ -120,6 +122,7 @@ def unpack(i: object, rk='clamg'):
     elif (
         (type(i) is str)
         or (type(i) is int)
+        or (type(i) is bool)
         or (type(i) is float)
     ):
         return i
