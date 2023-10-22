@@ -1,6 +1,6 @@
-Source: clamg
+Source: python3-clamg
 Section: python
-Priority: 
+Priority: optional
 Maintainer: Spencer Rak <spencer.rak@gmail.com>
 Build-Depends: debhelper (>> 5.0.0)
 Standards-Version: 3.8.4
@@ -8,7 +8,8 @@ Homepage: https://github.com/srak289/clamg
 
 Package: python3-clamg
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: python3
 Description: CLass Attribute Model Generator
- Create class-attribute models from YAML or JSON
- Works best while exploring deeply nested structures
+ Create class.attribute models from YAML or JSON or nested dicts.
+ Intended for use in the when one might appreciate object.attr
+ syntax over object["attr"].
