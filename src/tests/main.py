@@ -42,4 +42,4 @@ def test_loads_yaml():
 
 def test_raises_file_not_found():
     with pytest.raises(FileNotFoundError):
-        _ = clamg.load("wouldbereallysurprisedifthisexistedonyourcurrentsystem.yml")
+        _ = clamg.load(tempfile.mktemp(prefix="pytest.clamg_", suffix=".yaml"))
