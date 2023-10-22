@@ -69,7 +69,7 @@ def load(fp: str | os.PathLike | io.TextIOWrapper, _yaml=True, _json=False) -> B
 __all__ += ["load"]
 
 
-def unpack(i: object, rk='clamg'):
+def unpack(i: object, rk='clamg') -> Base:
     """Return a class-attribute model from data
 
         Args:
@@ -79,52 +79,29 @@ def unpack(i: object, rk='clamg'):
             clamg.Base
     """
     attrs = {}
-    if type(i) is dict:
+    if isinstance(i, dict):
         for k, v in i.items():
-            if type(v) is dict:
+            if isinstance(v, dict):
                 attrs.update({k:unpack(v, k)})
-            elif (
-                (type(v) is list)
-                or (type(v) is tuple)
-                or (type(v) is set)
-            ):
+            elif isinstance(v, (list, tuple, set)):
                 attrs.update({k:unpack(v, k)})
-            elif (
-                (type(v) is str)
-                or (type(v) is int)
-                or (type(v) is bool)
-                or (type(v) is float)
-            ):
+            elif isinstance(v, (str, int, bool, float)):
                 attrs.update({k:v})
             else:
                 raise ValueError(f"Unexpected type {type(v)}")
-    elif type(i) is list:
+    elif isinstance(i, (list, set, tuple)):
         attrs = []
         for li in i:
-            if type(li) is dict:
+            if isinstance(li, dict):
                 attrs.append(unpack(li, rk))
-            elif (
-                (type(li) is list)
-                or (type(li) is tuple)
-                or (type(li) is set)
-            ):
+            elif isinstance(li, (list, tuple, set)):
                 attrs.append(unpack(li, rk))
-            elif (
-                (type(li) is str)
-                or (type(li) is int)
-                or (type(li) is bool)
-                or (type(li) is float)
-            ):
+            elif isinstance(li, (str, int, bool, float)):
                 attrs.append(li)
             else:
                 raise ValueError(f"Unexpected type {type(li)}")
         return attrs
-    elif (
-        (type(i) is str)
-        or (type(i) is int)
-        or (type(i) is bool)
-        or (type(i) is float)
-    ):
+    elif isinstance(i, (str, int, bool, float)):
         return i
     else:
         raise ValueError(f"Unexpected type {type(i)}")
