@@ -1,48 +1,51 @@
 # CLassAttributeModelGenerator
 
-Given a [YAML](https://yaml.org) file or a [JSON](https://www.json.org) structure create a hierarchical object model.
+Given a nested dict create a hierarchical object model.
+
+Optionally provide models in [YAML](https://yaml.org) or [JSON](https://www.json.org) format.
 
 Some would say this is just a dict-wrapper.
 
-### Example 1
+
+### Example: Loading a nested dict
 
 ```python3
+    >>> data = dict(obj=dict(foo="bar", spam="eggs", a_list=[1,2,3]))
+    >>> data
+    {'obj': {'foo': 'bar', 'spam': 'eggs', 'a_list': [1, 2, 3]}}
+    >>> x = clamg.unpack(data)
+    >>> x
+    <clamg(obj=<obj(foo=bar, spam=eggs, a_list=[1, 2, 3])>)>
+    >>> x.obj.foo
+    'bar'
+```
 
-    >>> a = '''obj:
-    ...   obj_list:
+
+### Example: Loading YAML
+
+```python3
+    >>> SAMPLE_YAML = """\
+    ... obj:
+    ...   yaml: yes
+    ...   foo: bar
+    ...   spam: eggs
+    ...   a_list:
     ...     - 1
     ...     - 2
-    ...     - dog
-    ...   obj_dict:
-    ...     key_foo: bar
-    ...     key_spam: eggs
-    ... '''
-    >>> b = clamg.loads(a)
-    >>> b.obj
-    <obj(obj_list=[1, 2, 'dog'], obj_dict=<obj_dict(key_foo=bar, key_spam=eggs)>)>
-
+    ...     - 3
+    ... """
+    >>> clamg.loads(SAMPLE_YAML)
+    <clamg(obj=<obj(yaml=True, foo=bar, spam=eggs, a_list=[1, 2, 3])>)>
 ```
 
-### Example 2
+
+### Example: Loading JSON
 
 ```python3
-
-    >>> j = '''{
-    ...     "obj": {
-    ...         "obj_list": [
-    ...             1, 2, "dog"
-    ...         ],
-    ...         "obj_dict": {
-    ...             "key_foo":"bar",
-    ...             "key_spam":"eggs"
-    ...         }
-    ...     }
-    ... }'''
-    >>> jl = json.loads(j)
-    >>> h = clamg.unpack(jl)
-    >>> h
-    <(obj=<obj(obj_list=[1, 2, 'dog'], obj_dict=<obj_dict(key_foo=bar, key_spam=eggs)>)>)>
-
+    >>> SAMPLE_JSON = '{"obj": {"json": "yes", "foo": "bar", "spam": "eggs", "a_list": [1,2,3]}}'
+    >>> clamg.loads(SAMPLE_JSON)
+    <clamg(obj=<obj(json=yes, foo=bar, spam=eggs, a_list=[1, 2, 3])>)>
 ```
+
 
 It has occasionally proven useful when working with deeply nested structures.
