@@ -85,7 +85,7 @@ def unpack(i: object, rk='clamg') -> Base:
                 attrs.update({k:unpack(v, k)})
             elif isinstance(v, (list, tuple, set)):
                 attrs.update({k:unpack(v, k)})
-            elif isinstance(v, (str, int, bool, float)):
+            elif isinstance(v, (str, int, bool, float)) or v is None:
                 attrs.update({k:v})
             else:
                 raise ValueError(f"Unexpected type {type(v)}")
